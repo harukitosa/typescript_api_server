@@ -2,6 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { expect } from 'chai';
 
+import { createUser, authenticateUser } from '../src/database';
 const app = express();
 app.use(express.json());
 
@@ -10,7 +11,7 @@ app.post('/register', (req, res) => {
   const { username, password } = req.body;
   createUser(username, password);
   res.status(201).send('User registered');
-import { createUser, authenticateUser } from '../src/database';
+
 });
 
 app.post('/login', (req, res) => {

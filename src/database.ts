@@ -8,40 +8,55 @@ db.serialize(() => {
   db.run("CREATE TABLE IF NOT EXISTS Task (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, completed BOOLEAN)");
 });
 
-export const createTask = (name: string, completed: boolean) => {
-  db.run("INSERT INTO Task (name, completed) VALUES (?, ?)", [name, completed], function(err) {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
+export const createTask = async (name: string, completed: boolean) => {
+  return new Promise<void>((resolve, reject) => {
+    db.run("INSERT INTO Task (name, completed) VALUES (?, ?)", [name, completed], function(err) {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      console.log(`A row has been inserted with rowid ${this.lastID}`);
+      resolve();
+    });
   });
-export const createUser = (username: string, password: string) => {
+export const createUser = async (username: string, password: string) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
-  db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log(`A user has been inserted with rowid ${this.lastID}`);
+  return new Promise<void>((resolve, reject) => {
+    db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      console.log(`A user has been inserted with rowid ${this.lastID}`);
+      resolve();
+    });
+  });
+};
+export const authenticateUser = async (username: string, password: string): Promise<boolean> => {
+  return new Promise<boolean>((resolve, reject) => {
+    db.get("SELECT password FROM User WHERE username = ?", [username], (err, row) => {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      if (!row) {
+        return resolve(false);
+      }
+      const isMatch = bcrypt.compareSync(password, row.password);
+      resolve(isMatch);
+    });
   });
 };
 
-};
-export const authenticateUser = (username: string, password: string, callback: (err: Error | null, isMatch?: boolean) => void) => {
-  db.get("SELECT password FROM User WHERE username = ?", [username], (err, row) => {
-    if (err) {
-      return callback(err);
-    }
-    if (!row) {
-      return callback(null, false);
-    }
-    const isMatch = bcrypt.compareSync(password, row.password);
-    callback(null, isMatch);
-  });
-};
-
-export const readTasks = (callback: (err: Error | null, rows?: any[]) => void) => {
-  db.all("SELECT * FROM Task", [], (err, rows) => {
-    callback(err, rows);
+export const readTasks = async (): Promise<any[]> => {
+  return new Promise<any[]>((resolve, reject) => {
+    db.all("SELECT * FROM Task", [], (err, rows) => {
+      if (err) {
+        console.error(err.message);
+        return reject(err);
+      }
+      resolve(rows);
+    });
   });
 };
 
@@ -62,3 +77,4 @@ export const deleteTask = (id: number) => {
     console.log(`Row(s) deleted: ${this.changes}`);
   });
 };
+}

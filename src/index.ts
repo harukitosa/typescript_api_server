@@ -9,24 +9,24 @@ const port = 54902;
 
 app.use(express.json());
 // User registration
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { username, password } = req.body;
-  createUser(username, password);
+  await createUser(username, password);
   res.status(201).send('User registered');
 });
 
 // User login
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  authenticateUser(username, password, (err, isMatch) => {
-    if (err) {
-      return res.status(500).send('Internal server error');
-    }
+  try {
+    const isMatch = await authenticateUser(username, password);
     if (!isMatch) {
       return res.status(401).send('Invalid credentials');
     }
     res.status(200).send('User logged in');
-  });
+  } catch (err) {
+    res.status(500).send('Internal server error');
+  }
 });
 
 // User logout
@@ -36,20 +36,20 @@ app.post('/logout', (req, res) => {
 
 
 // Create a new task
-app.post('/tasks', (req, res) => {
+app.post('/tasks', async (req, res) => {
   const { name, completed } = req.body;
-  createTask(name, completed);
+  await createTask(name, completed);
   res.status(201).send('Task created');
 });
 
 // Read all tasks
-app.get('/tasks', (req, res) => {
-  readTasks((err, rows) => {
-    if (err) {
-      return res.status(500).send(err.message);
-    }
+app.get('/tasks', async (req, res) => {
+  try {
+    const rows = await readTasks();
     res.json(rows);
-  });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 // Update a task

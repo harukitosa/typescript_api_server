@@ -10,7 +10,7 @@ app.post('/register', (req, res) => {
   const { username, password } = req.body;
   createUser(username, password);
   res.status(201).send('User registered');
-import { createUser } from '../src/database';
+import { createUser, authenticateUser } from '../src/database';
 });
 
 app.post('/login', (req, res) => {
@@ -23,13 +23,14 @@ app.post('/logout', (req, res) => {
 
 describe('Authentication API', () => {
   it('should register a user', async () => {
-    const response = await request(app).post('/register');
+    const response = await request(app).post('/register').send({ username: 'testuser', password: 'testpass' });
     expect(response.status).to.equal(201);
     expect(response.text).to.equal('User registered');
   });
 
   it('should login a user', async () => {
-    const response = await request(app).post('/login');
+    await request(app).post('/register').send({ username: 'testuser', password: 'testpass' });
+    const response = await request(app).post('/login').send({ username: 'testuser', password: 'testpass' });
     expect(response.status).to.equal(200);
     expect(response.text).to.equal('User logged in');
   });

@@ -7,7 +7,10 @@ app.use(express.json());
 
 // Mock endpoints
 app.post('/register', (req, res) => {
+  const { username, password } = req.body;
+  createUser(username, password);
   res.status(201).send('User registered');
+import { createUser } from '../src/database';
 });
 
 app.post('/login', (req, res) => {

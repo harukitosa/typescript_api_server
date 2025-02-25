@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createTask, readTasks, updateTask, deleteTask } from './database';
+import { createTask, readTasks, updateTask, deleteTask, createUser } from './database';
 
 const app = express();
 
@@ -10,6 +10,8 @@ const port = 54902;
 app.use(express.json());
 // User registration
 app.post('/register', (req, res) => {
+  const { username, password } = req.body;
+  createUser(username, password);
   res.status(201).send('User registered');
 });
 

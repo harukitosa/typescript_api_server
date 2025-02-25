@@ -8,6 +8,21 @@ const app = express();
 const port = 54902;
 
 app.use(express.json());
+// User registration
+app.post('/register', (req, res) => {
+  res.status(201).send('User registered');
+});
+
+// User login
+app.post('/login', (req, res) => {
+  res.status(200).send('User logged in');
+});
+
+// User logout
+app.post('/logout', (req, res) => {
+  res.status(200).send('User logged out');
+});
+
 
 // Create a new task
 app.post('/tasks', (req, res) => {

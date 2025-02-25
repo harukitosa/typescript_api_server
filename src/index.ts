@@ -1,24 +1,45 @@
 import express from 'express';
 
-import sqlite3 from 'sqlite3';
+import { createTask, readTasks, updateTask, deleteTask } from './database';
+
 const app = express();
-const db = new sqlite3.Database(':memory:');
 
-db.serialize(() => {
-  db.run("CREATE TABLE greetings (message TEXT)");
 
-  const stmt = db.prepare("INSERT INTO greetings VALUES (?)");
-  stmt.run("Hello, World!");
-  stmt.finalize();
+const port = 54902;
 
-  db.each("SELECT rowid AS id, message FROM greetings", (err, row) => {
-    console.log(row.id + ": " + row.message);
+app.use(express.json());
+
+// Create a new task
+app.post('/tasks', (req, res) => {
+  const { name, completed } = req.body;
+  createTask(name, completed);
+  res.status(201).send('Task created');
+});
+
+// Read all tasks
+app.get('/tasks', (req, res) => {
+  readTasks((err, rows) => {
+    if (err) {
+      return res.status(500).send(err.message);
+    }
+    res.json(rows);
   });
 });
 
-db.close();
-const port = 54902;
+// Update a task
+app.put('/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  const { completed } = req.body;
+  updateTask(parseInt(id), completed);
+  res.send('Task updated');
+});
 
+// Delete a task
+app.delete('/tasks/:id', (req, res) => {
+  const { id } = req.params;
+  deleteTask(parseInt(id));
+  res.send('Task deleted');
+});
 app.get('/', (req, res) => {
   res.send('Hello, World!');
 });

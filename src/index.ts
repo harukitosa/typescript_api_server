@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createTask, readTasks, updateTask, deleteTask } from './database';
+import { createTask, readTasks, updateTask, deleteTask, createUser } from './database';
 
 const app = express();
 

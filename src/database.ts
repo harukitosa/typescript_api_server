@@ -1,5 +1,6 @@
 import sqlite3 from 'sqlite3';
 
+import bcrypt from 'bcrypt';
 const db = new sqlite3.Database(':memory:');
 
 db.serialize(() => {
@@ -15,7 +16,8 @@ export const createTask = (name: string, completed: boolean) => {
     console.log(`A row has been inserted with rowid ${this.lastID}`);
   });
 export const createUser = (username: string, password: string) => {
-  db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, password], function(err) {
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
     if (err) {
       return console.error(err.message);
     }

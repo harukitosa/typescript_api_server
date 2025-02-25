@@ -26,6 +26,18 @@ export const createUser = (username: string, password: string) => {
 };
 
 };
+export const authenticateUser = (username: string, password: string, callback: (err: Error | null, isMatch?: boolean) => void) => {
+  db.get("SELECT password FROM User WHERE username = ?", [username], (err, row) => {
+    if (err) {
+      return callback(err);
+    }
+    if (!row) {
+      return callback(null, false);
+    }
+    const isMatch = bcrypt.compareSync(password, row.password);
+    callback(null, isMatch);
+  });
+};
 
 export const readTasks = (callback: (err: Error | null, rows?: any[]) => void) => {
   db.all("SELECT * FROM Task", [], (err, rows) => {

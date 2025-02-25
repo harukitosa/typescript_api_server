@@ -17,7 +17,16 @@ app.post('/register', (req, res) => {
 
 // User login
 app.post('/login', (req, res) => {
-  res.status(200).send('User logged in');
+  const { username, password } = req.body;
+  authenticateUser(username, password, (err, isMatch) => {
+    if (err) {
+      return res.status(500).send('Internal server error');
+    }
+    if (!isMatch) {
+      return res.status(401).send('Invalid credentials');
+    }
+    res.status(200).send('User logged in');
+  });
 });
 
 // User logout

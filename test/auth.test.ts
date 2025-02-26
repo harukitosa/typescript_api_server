@@ -2,6 +2,7 @@ import request from 'supertest';
 import express from 'express';
 import { expect } from 'chai';
 
+import jwt from 'jsonwebtoken';
 import { createUser, authenticateUser } from '../src/database';
 const app = express();
 app.use(express.json());
@@ -15,7 +16,16 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  res.status(200).send('User logged in');
+  const { username, password } = req.body;
+  authenticateUser(username, password).then(isMatch => {
+    if (!isMatch) {
+      return res.status(401).send('Invalid credentials');
+    }
+    const token = jwt.sign({ username }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
+    res.status(200).json({ message: 'User logged in', token });
+  }).catch(err => {
+    res.status(500).send('Internal server error');
+  });
 });
 
 app.post('/logout', (req, res) => {

@@ -80,4 +80,3 @@ export const deleteTask = (id: number) => {
     console.log(`Row(s) deleted: ${this.changes}`);
   });
 };
-}

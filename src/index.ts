@@ -1,9 +1,14 @@
 import express from 'express';
 
-import { createTask, readTasks, updateTask, deleteTask, createUser } from './database';
+import { createTask, readTasks, updateTask, deleteTask, createUser, authenticateUser } from './database';
+import jwt from 'jsonwebtoken';
+import expressJwt from 'express-jwt';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
+app.use(expressJwt({ secret: process.env.JWT_SECRET || 'secret', algorithms: ['HS256'] }).unless({ path: ['/login', '/register'] }));
 
 const port = 54902;
 
@@ -23,7 +28,8 @@ app.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(401).send('Invalid credentials');
     }
-    res.status(200).send('User logged in');
+    const token = jwt.sign({ username }, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' });
+    res.status(200).json({ message: 'User logged in', token });
   } catch (err) {
     res.status(500).send('Internal server error');
   }

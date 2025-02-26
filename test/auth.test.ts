@@ -33,7 +33,8 @@ describe('Authentication API', () => {
     await request(app).post('/register').send({ username: 'testuser', password: 'testpass' });
     const response = await request(app).post('/login').send({ username: 'testuser', password: 'testpass' });
     expect(response.status).to.equal(200);
-    expect(response.text).to.equal('User logged in');
+    expect(response.body.message).to.equal('User logged in');
+    expect(response.body).to.have.property('token');
   });
 
   it('should logout a user', async () => {

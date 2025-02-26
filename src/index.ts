@@ -3,12 +3,11 @@ import express from 'express';
 import { createTask, readTasks, updateTask, deleteTask, createUser, authenticateUser } from './database';
 import jwt from 'jsonwebtoken';
 import expressJwt from 'express-jwt';
-import dotenv from 'dotenv';
-dotenv.config();
+import jwtMiddleware from './middleware/jwtMiddleware';
 
 const app = express();
 
-app.use(expressJwt({ secret: process.env.JWT_SECRET || 'secret', algorithms: ['HS256'] }).unless({ path: ['/login', '/register'] }));
+app.use(jwtMiddleware);
 
 const port = 54902;
 

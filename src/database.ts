@@ -21,20 +21,6 @@ export const createTask = async (name: string, completed: boolean) => {
   });
 };
 
-export const createUser = async (username: string, password: string) => {
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  return new Promise<void>((resolve, reject) => {
-    db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
-      if (err) {
-        console.error(err.message);
-        return reject(err);
-      }
-      console.log(`A user has been inserted with rowid ${this.lastID}`);
-      resolve();
-    });
-  });
-};
-
 export const authenticateUser = async (username: string, password: string): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     db.get("SELECT password FROM User WHERE username = ?", [username], (err, row: { password: string }) => {
@@ -50,18 +36,19 @@ export const authenticateUser = async (username: string, password: string): Prom
     });
   });
 };
+export const createUser = async (username: string, password: string) => {
+  const hashedPassword = bcrypt.hashSync(password, 10);
   return new Promise<void>((resolve, reject) => {
-    db.run("INSERT INTO Task (name, completed) VALUES (?, ?)", [name, completed], function(err) {
+    db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
       if (err) {
         console.error(err.message);
         return reject(err);
       }
-      console.log(`A row has been inserted with rowid ${this.lastID}`);
+      console.log(`A user has been inserted with rowid ${this.lastID}`);
       resolve();
     });
   });
-export const createUser = async (username: string, password: string) => {
-  const hashedPassword = bcrypt.hashSync(password, 10);
+};
   return new Promise<void>((resolve, reject) => {
     db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
       if (err) {

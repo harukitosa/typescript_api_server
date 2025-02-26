@@ -49,32 +49,7 @@ export const createUser = async (username: string, password: string) => {
     });
   });
 };
-  return new Promise<void>((resolve, reject) => {
-    db.run("INSERT INTO User (username, password) VALUES (?, ?)", [username, hashedPassword], function(err) {
-      if (err) {
-        console.error(err.message);
-        return reject(err);
-      }
-      console.log(`A user has been inserted with rowid ${this.lastID}`);
-      resolve();
-    });
-  });
-};
-export const authenticateUser = async (username: string, password: string): Promise<boolean> => {
-  return new Promise<boolean>((resolve, reject) => {
-    db.get("SELECT password FROM User WHERE username = ?", [username], (err, row) => {
-      if (err) {
-        console.error(err.message);
-        return reject(err);
-      }
-      if (!row) {
-        return resolve(false);
-      }
-      const isMatch = bcrypt.compareSync(password, row.password);
-      resolve(isMatch);
-    });
-  });
-};
+
 
 export const readTasks = async (): Promise<any[]> => {
   return new Promise<any[]>((resolve, reject) => {

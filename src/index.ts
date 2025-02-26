@@ -10,7 +10,7 @@ const app = express();
 
 app.use(expressJwt({ secret: process.env.JWT_SECRET || 'secret', algorithms: ['HS256'] }).unless({ path: ['/login', '/register'] }));
 
-const port = 54902;
+const port = process.env.PORT || 54902;
 
 app.use(express.json());
 // User registration

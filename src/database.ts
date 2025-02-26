@@ -21,21 +21,7 @@ export const createTask = async (name: string, completed: boolean) => {
   });
 };
 
-export const authenticateUser = async (username: string, password: string): Promise<boolean> => {
-  return new Promise<boolean>((resolve, reject) => {
-    db.get("SELECT password FROM User WHERE username = ?", [username], (err, row: { password: string }) => {
-      if (err) {
-        console.error(err.message);
-        return reject(err);
-      }
-      if (!row) {
-        return resolve(false);
-      }
-      const isMatch = bcrypt.compareSync(password, row.password);
-      resolve(isMatch);
-    });
-  });
-};
+
 export const createUser = async (username: string, password: string) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   return new Promise<void>((resolve, reject) => {
